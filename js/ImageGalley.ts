@@ -49,13 +49,14 @@ module simple{
             this.createDivs();
         }
 
+        imagesDelay:number=1500;
         isRunning:boolean;
         start(){
             if(this.isRunning) return;
             this.isRunning = true;
-            this.showNextSet();
+            this.showNextSet(150);
             this.serverTimer = setInterval(()=>this.loadData(),this.serverdelay*1000);
-            this.serverTimer = setInterval(()=>this.showNextSet(),this.showtime*1000);
+            this.serverTimer = setInterval(()=>this.showNextSet(this.imagesDelay),this.showtime*1000);
         }
 
         createDivs(){
@@ -74,24 +75,29 @@ module simple{
             return this.images[this.current]
         }
         private inset:number=-1;
-        showNextSet():void{
+        showNextSet(delay:number):void{
             console.log('show next set');
 
             this.inset = -1;
            // this.screenImages = this.$view.children();
-            this.switchNextImage();
+            this.switchNextImage(delay);
         }
         screenImages:JQuery[];
 
-        switchNextImage():void{
+        switchNextImage(delay:number):void{
             this.inset++;
+            if(this.inset>=this.screenImages.length) return;
             var next:ImageData = this.getNext();
             var newImage:JQuery = $('<img>').attr('src',next.filename);
             console.log(this.inset);
             var div = this.screenImages[this.inset];
-            div.empty();
+            var oldImage = div.children();
+            oldImage.addClass('out');
+            setTimeout(function(){oldImage.remove()},1000);
+            newImage.addClass('inn');
+            setTimeout(function(){newImage.removeClass('inn')},20);
             div.append(newImage);         
-            if(this.inset<3) setTimeout(()=>this.switchNextImage(),1500);
+           setTimeout(()=>this.switchNextImage(delay),delay);
         }
     }
 }
