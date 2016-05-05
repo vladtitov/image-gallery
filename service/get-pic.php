@@ -12,6 +12,7 @@ $out->pics=array_reverse($new_pic);
 
 if(count($new_pic)<MIN){
     $rand = getListing(RANDOM);
+    shuffle($rand);
     $out->pics = array_merge($out->pics,$rand ) ;
 }
 
@@ -23,7 +24,8 @@ function getListing($folder){
     $listing =array_diff($listing, array('.', '..'));
     $ar =array();
     foreach ($listing as $item){
-        $ar[]= getImagPearams(PREF,$folder.'/'.$item);
+        $img = getImagPearams(PREF,$folder.'/'.$item);
+       if($img) $ar[] = $img;
     }
     return $ar;
 }
@@ -36,6 +38,7 @@ function getImagPearams($pref,$filename){
     $out->filemtimeD = date ("F d Y H:i:s.",$out->filemtime);
    // $out->filectimeD = date ("F d Y H:i:s.",$out->filectime);
     if(@is_array(getimagesize($pref.$filename))) $out -> info = getimagesize($pref.$filename);
+    else return 0;
     return $out;
 }
 
