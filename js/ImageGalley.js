@@ -8,8 +8,8 @@ var simple;
         function Gallery(options) {
             var _this = this;
             this.showtime = 10;
-            this.serverdelay = 10;
-            this.imagesDelay = 1500;
+            this.serverdelay = 60;
+            this.imagesDelay = 1.5;
             this.current = -1;
             this.inset = -1;
             for (var str in options)
@@ -33,7 +33,7 @@ var simple;
                 return;
             this.isRunning = true;
             this.showNextSet(150);
-            this.showTimer = setInterval(function () { return _this.showNextSet(_this.imagesDelay); }, this.showtime * 1000);
+            this.showTimer = setInterval(function () { return _this.showNextSet(_this.imagesDelay * 1000); }, this.showtime * 1000);
         };
         Gallery.prototype.createDivs = function () {
             this.screenImages = [];
@@ -52,7 +52,6 @@ var simple;
         Gallery.prototype.showNextSet = function (delay) {
             console.log('show next set');
             this.inset = -1;
-            // this.screenImages = this.$view.children();
             this.switchNextImage(delay);
         };
         Gallery.prototype.switchNextImage = function (delay) {
@@ -78,8 +77,9 @@ var simple;
 })(simple || (simple = {}));
 $(document).ready(function () {
     var options = {
-        serverdelay: 10,
-        showtime: 10 // how long image displayed on screen
+        serverdelay: 40,
+        showtime: 10,
+        imagesDelay: 1.5 //delay between images swap
     };
     var gal = new simple.Gallery(options);
 });
