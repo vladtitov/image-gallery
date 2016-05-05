@@ -9,6 +9,7 @@ var simple;
             var _this = this;
             this.showtime = 10;
             this.serverdelay = 60;
+            this.fullSceenCount = 1;
             this.imagesDelay = 1.5;
             this.current = -1;
             this.inset = -1;
@@ -17,6 +18,7 @@ var simple;
             this.$view = $('#MyWindow');
             this.loadData().then(function () {
                 _this.start();
+                _this.showNextSet(150);
             });
             this.createDivs();
             this.serverTimer = setInterval(function () { return _this.loadData(); }, this.serverdelay * 1000);
@@ -32,8 +34,30 @@ var simple;
             if (this.isRunning)
                 return;
             this.isRunning = true;
-            this.showNextSet(150);
             this.showTimer = setInterval(function () { return _this.showNextSet(_this.imagesDelay * 1000); }, this.showtime * 1000);
+        };
+        Gallery.prototype.stop = function () {
+            clearInterval(this.showTimer);
+            this.isRunning = false;
+        };
+        Gallery.prototype.showFullScreen = function () {
+            var _this = this;
+            var next = this.getNext();
+            var div = $('<div>').append($('<img>').attr('src', next.filename));
+            var img = $('<div>').append(div).addClass('fullscreen in');
+            img.appendTo($('body'));
+            setTimeout(function () {
+                img.removeClass('in');
+            }, 20);
+            setTimeout(function () {
+                _this.showNextSet(150);
+            }, 2000);
+            setTimeout(function () {
+                img.fadeOut('fast', function () {
+                    img.remove();
+                    _this.start();
+                });
+            }, 10000);
         };
         Gallery.prototype.createDivs = function () {
             this.screenImages = [];
@@ -52,7 +76,14 @@ var simple;
         Gallery.prototype.showNextSet = function (delay) {
             console.log('show next set');
             this.inset = -1;
-            this.switchNextImage(delay);
+            this.fullSceenCount--;
+            if (this.fullSceenCount < 0) {
+                this.stop();
+                this.showFullScreen();
+                this.fullSceenCount = Math.floor(Math.random() * 7) + 3;
+            }
+            else
+                this.switchNextImage(delay);
         };
         Gallery.prototype.switchNextImage = function (delay) {
             var _this = this;

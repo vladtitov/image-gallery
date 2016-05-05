@@ -18,8 +18,8 @@ module simple{
         filemtime: number;
         filemtimeD: string;
         info:ImageInfo;
-        
     }
+
     interface Result{
         pics:ImageData[]
     }
@@ -37,11 +37,14 @@ module simple{
         showTimer:number;
         serverdelay:number = 60;
         serverTimer:number;
+        fullSceenCount:number = 1;
+
         constructor(options){
             for(var str in options) this[str] = options[str];
             this.$view = $('#MyWindow');
             this.loadData().then(()=>{
                 this.start();
+                this.showNextSet(150);
             });
             this.createDivs();
             this.serverTimer = setInterval(()=>this.loadData(),this.serverdelay*1000);
@@ -53,8 +56,32 @@ module simple{
         start(){
             if(this.isRunning) return;
             this.isRunning = true;
-            this.showNextSet(150);
             this.showTimer = setInterval(()=>this.showNextSet(this.imagesDelay*1000),this.showtime*1000);
+        }
+
+        stop():void{
+            clearInterval(this.showTimer);
+            this.isRunning = false;
+        }
+
+        showFullScreen():void{
+            var next:ImageData = this.getNext();
+            var div =$('<div>').append($('<img>').attr('src',next.filename));
+            var img:JQuery =$('<div>').append(div).addClass('fullscreen in');
+            img.appendTo($('body'));
+            setTimeout(function(){
+                img.removeClass('in');
+            },20);
+            setTimeout(()=>{
+                this.showNextSet(150);
+            },2000);
+            setTimeout(()=>{
+                img.fadeOut('fast',() =>{
+                    img.remove();
+                    this.start();
+                });
+                },10000);
+
         }
 
         createDivs(){
@@ -67,16 +94,25 @@ module simple{
         }
 
         private current:number=-1;
+
         private getNext():ImageData{
             this.current++;
             if(this.current>=this.images.length)this.current=0;
             return this.images[this.current]
         }
         private inset:number=-1;
+
+
         showNextSet(delay:number):void{
             console.log('show next set');
             this.inset = -1;
-            this.switchNextImage(delay);
+            this.fullSceenCount --;
+            if(this.fullSceenCount<0){
+                this.stop();
+                this.showFullScreen();
+                this.fullSceenCount = Math.floor(Math.random() * 7) + 3  ;
+            }
+            else this.switchNextImage(delay);
         }
         screenImages:JQuery[];
 

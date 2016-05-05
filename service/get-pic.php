@@ -23,9 +23,15 @@ function getListing($folder){
     $listing = scandir(PREF.$folder);
     $listing =array_diff($listing, array('.', '..'));
     $ar =array();
+    $large=array();
+
     foreach ($listing as $item){
         $img = getImagPearams(PREF,$folder.'/'.$item);
-       if($img) $ar[] = $img;
+       if($img){
+           $w = $img->info[0];
+           $img->w = $w;
+           $ar[] = $img;
+       }
     }
     return $ar;
 }
