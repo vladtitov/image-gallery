@@ -21,21 +21,15 @@ module simple{
         
     }
     interface Result{
-        new_pic:ImageData[]
-        random_pic:ImageData[]
+        pics:ImageData[]
     }
     export class Gallery{
         images:ImageData[];
 
         $view:JQuery
-        loadData():void{
-            $.get('service/get-pic.php').done((res:Result)=>{
-                var newImages= res.new_pic;
-                var rand = res.random_pic;
-                var all  = res.new_pic.concat(rand);
-                console.log(all);
-                this.images = all;
-                this.start();
+        loadData():JQueryPromise<any>{
+            return $.get('service/get-pic.php').done((res:Result)=>{
+                this.images = res.pics
             })
         }
         nextdelay:number;
@@ -44,19 +38,23 @@ module simple{
         serverdelay:number = 10;
         serverTimer:number;
         constructor(options){
+            for(var str in options) this[str] = options[str];
             this.$view = $('#MyWindow');
-            this.loadData();
+            this.loadData().then(()=>{
+                this.start();
+            });
             this.createDivs();
+            this.serverTimer = setInterval(()=>this.loadData(),this.serverdelay*1000);
         }
 
         imagesDelay:number=1500;
         isRunning:boolean;
+        isInit:boolean;
         start(){
             if(this.isRunning) return;
             this.isRunning = true;
             this.showNextSet(150);
-            this.serverTimer = setInterval(()=>this.loadData(),this.serverdelay*1000);
-            this.serverTimer = setInterval(()=>this.showNextSet(this.imagesDelay),this.showtime*1000);
+            this.showTimer = setInterval(()=>this.showNextSet(this.imagesDelay),this.showtime*1000);
         }
 
         createDivs(){
@@ -77,7 +75,6 @@ module simple{
         private inset:number=-1;
         showNextSet(delay:number):void{
             console.log('show next set');
-
             this.inset = -1;
            // this.screenImages = this.$view.children();
             this.switchNextImage(delay);
@@ -89,7 +86,7 @@ module simple{
             if(this.inset>=this.screenImages.length) return;
             var next:ImageData = this.getNext();
             var newImage:JQuery = $('<img>').attr('src',next.filename);
-            console.log(this.inset);
+          //  console.log(this.inset);
             var div = this.screenImages[this.inset];
             var oldImage = div.children();
             oldImage.addClass('out');
@@ -103,7 +100,8 @@ module simple{
 }
 $(document).ready(function(){
     var options ={
-
+        serverdelay:10, //how often query server in seconds
+        showtime:10 // how long image displayed on screen
     }
     var gal = new simple.Gallery(options);
 })

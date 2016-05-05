@@ -6,24 +6,25 @@ var simple;
 (function (simple) {
     var Gallery = (function () {
         function Gallery(options) {
+            var _this = this;
             this.showtime = 10;
             this.serverdelay = 10;
             this.imagesDelay = 1500;
             this.current = -1;
             this.inset = -1;
+            for (var str in options)
+                this[str] = options[str];
             this.$view = $('#MyWindow');
-            this.loadData();
+            this.loadData().then(function () {
+                _this.start();
+            });
             this.createDivs();
+            this.serverTimer = setInterval(function () { return _this.loadData(); }, this.serverdelay * 1000);
         }
         Gallery.prototype.loadData = function () {
             var _this = this;
-            $.get('service/get-pic.php').done(function (res) {
-                var newImages = res.new_pic;
-                var rand = res.random_pic;
-                var all = res.new_pic.concat(rand);
-                console.log(all);
-                _this.images = all;
-                _this.start();
+            return $.get('service/get-pic.php').done(function (res) {
+                _this.images = res.pics;
             });
         };
         Gallery.prototype.start = function () {
@@ -32,8 +33,7 @@ var simple;
                 return;
             this.isRunning = true;
             this.showNextSet(150);
-            this.serverTimer = setInterval(function () { return _this.loadData(); }, this.serverdelay * 1000);
-            this.serverTimer = setInterval(function () { return _this.showNextSet(_this.imagesDelay); }, this.showtime * 1000);
+            this.showTimer = setInterval(function () { return _this.showNextSet(_this.imagesDelay); }, this.showtime * 1000);
         };
         Gallery.prototype.createDivs = function () {
             this.screenImages = [];
@@ -62,7 +62,7 @@ var simple;
                 return;
             var next = this.getNext();
             var newImage = $('<img>').attr('src', next.filename);
-            console.log(this.inset);
+            //  console.log(this.inset);
             var div = this.screenImages[this.inset];
             var oldImage = div.children();
             oldImage.addClass('out');
@@ -77,7 +77,10 @@ var simple;
     simple.Gallery = Gallery;
 })(simple || (simple = {}));
 $(document).ready(function () {
-    var options = {};
+    var options = {
+        serverdelay: 10,
+        showtime: 10 // how long image displayed on screen
+    };
     var gal = new simple.Gallery(options);
 });
 //# sourceMappingURL=ImageGalley.js.map

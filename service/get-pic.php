@@ -3,12 +3,17 @@ define('PREF','../');
 define('DATA','data');
 define('NEW_PICS',DATA.'/new_pics');
 define('RANDOM',DATA.'/random_pics');
+define('MAX',36);
 $out = new stdClass();
 $new_pic = getListing(NEW_PICS);
 usort($new_pic, 'custom_sort');
 //$out->orig =  getListing(NEW_PICS);
-$out->new_pic=array_reverse($new_pic);
-$out->random_pic= getListing(RANDOM);
+$out->pics=array_reverse($new_pic);
+
+if(count($new_pic)<MAX){
+    $rand = getListing(RANDOM);
+    $out->pics = array_merge($out->pics,$rand ) ;
+}
 
 header('Content-type: application/json');
 echo json_encode($out);
