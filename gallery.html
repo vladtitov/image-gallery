@@ -5,17 +5,36 @@
     <title>Gallery</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="libs/animate.css" rel="stylesheet">
+    <script src="libs/jquery-2.1.0.min.js"></script>
 </head>
 <body>
 <div id="Container">
     <div id="Content">
+        <style>
+            #MyWindow>div{
+                display: inline-block;
+                position: relative;
+                width: 640px;
+                height: 480px;
+                margin: 20px;
+            }
+            #MyWindow>div>*{
+                width: 640px;
+                height: 480px;
+                position: absolute;
+            }
+
+        </style>
+        <div id="MyWindow">
+
+        </div>
 
     </div>
 
+    <script src="js/ImageGalley.js">  </script>
 
 </div>
 </body>
