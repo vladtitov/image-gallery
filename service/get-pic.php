@@ -3,14 +3,14 @@ define('PREF','../');
 define('DATA','data');
 define('NEW_PICS',DATA.'/new_pics');
 define('RANDOM',DATA.'/random_pics');
-define('MAX',36);
+define('MIN',36);
 $out = new stdClass();
 $new_pic = getListing(NEW_PICS);
 usort($new_pic, 'custom_sort');
 //$out->orig =  getListing(NEW_PICS);
 $out->pics=array_reverse($new_pic);
 
-if(count($new_pic)<MAX){
+if(count($new_pic)<MIN){
     $rand = getListing(RANDOM);
     $out->pics = array_merge($out->pics,$rand ) ;
 }
