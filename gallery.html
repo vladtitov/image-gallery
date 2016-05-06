@@ -75,20 +75,10 @@
 
             .fullscreen img{
                 position: absolute;
-                /* width:1366px;
-                 height: 768px;*/
-                /*  margin: auto;*/
                 left: 0;
-                /* right: 0;*/
                 top: 0;
-                /* bottom: 0;*/
                 padding: 0;
                 margin: -5px;
-                /*  border: thin white solid;*/
-                /*  padding: 20px;*/
-                /*  border-radius: 10px;*/
-                /* // max-width: 1920px;
-                 // max-height: 1080px;*/
                 width: 101vw;
                 height: 101vh;
             }
@@ -97,12 +87,30 @@
                 transform:translateY(-100%);
                 -webkit-transform:translateY(-100%);
             }
+            .adds.inr{
+                width: 101vw;
+                height: 101vh;
+                transform:translateX(100%);
+                -webkit-transform:translateX(100%);
+            }
+
+            #Overlay{
+                position: absolute;
+                top:0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
         </style>
         <div id="MyWindow">
 
         </div>
+        <div id="Overlay">
+
+        </div>
 
     </div>
+
 
     <script src="js/ImageGalley.js">  </script>
 

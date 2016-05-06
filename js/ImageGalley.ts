@@ -25,8 +25,9 @@ module simple{
     }
     export class Gallery{
         images:ImageData[];
-
         $view:JQuery
+        $adds:JQuery;
+        $overlay:JQuery;
         loadData():JQueryPromise<any>{
             return $.get('service/get-pic.php').done((res:Result)=>{
                 this.images = res.pics;
@@ -48,6 +49,8 @@ module simple{
             });
             this.createDivs();
             this.serverTimer = setInterval(()=>this.loadData(),this.serverdelay*1000);
+            this.$adds =$('<div>').addClass('fullscreen').html('<img src="data/EuroOptimum.jpg">');
+            this.$overlay= $('#Overlay');
         }
 
         imagesDelay:number=1.5;
@@ -56,7 +59,7 @@ module simple{
         start(){
             if(this.isRunning) return;
             this.isRunning = true;
-            this.showTimer = setInterval(()=>this.showNextSet(this.imagesDelay*1000),this.showtime*1000);
+           // this.showTimer = setInterval(()=>this.showNextSet(this.imagesDelay*1000),this.showtime*1000);
         }
 
         stop():void{
@@ -65,25 +68,50 @@ module simple{
         }
 
         showFullScreen():void{
+            console.log('full screen');
             var next:ImageData = this.getNext();
             var div =$('<div>').append($('<img>').attr('src',next.filename));
             var img:JQuery =$('<div>').append(div).addClass('fullscreen in');
-            img.appendTo($('body'));
+            img.appendTo(this.$overlay);
             setTimeout(function(){
                 img.removeClass('in');
             },20);
             setTimeout(()=>{
-                this.showNextSet(150);
+
             },2000);
             setTimeout(()=>{
-                img.fadeOut('fast',() =>{
+               // img.fadeOut('fast',() =>{
+                  //  img.remove();
+                  //  this.start();
+               // });
+                this.showAdda();
+                setTimeout(()=>{
                     img.remove();
-                    this.start();
-                });
-                },10000);
+                },2000);
+
+                },8000);
 
         }
 
+        showAdda():void{
+            console.log('showing add');
+            var adds:JQuery = this.$adds.show().addClass('in').appendTo(this.$overlay);
+            setTimeout(()=>{
+                adds.removeClass('in');
+            },20);
+            setTimeout(()=>{
+                adds.fadeOut('fast',() =>{
+                    adds.remove();
+                    // this.start();
+                        setTimeout(()=>{
+                            this.showNextSet(700);
+                        },500)
+
+
+                 });
+
+            },10000);
+        }
         createDivs(){
             this.screenImages=[];
             for(var i=0;i<4;i++){
@@ -104,21 +132,31 @@ module simple{
 
 
         showNextSet(delay:number):void{
-            console.log('show next set');
+            console.log('show next set '+delay);
             this.inset = -1;
-            this.fullSceenCount --;
-            if(this.fullSceenCount<0){
-                this.stop();
-                this.showFullScreen();
-                this.fullSceenCount = Math.floor(Math.random() * 7) + 3  ;
-            }
-            else this.switchNextImage(delay);
+           // this.fullSceenCount --;
+           // if(this.fullSceenCount<0){
+              //  this.stop();
+               // this.showFullScreen();
+               // this.fullSceenCount = Math.floor(Math.random() * 7) + 3  ;
+            //}
+           // else
+            this.switchNextImage(delay);
         }
         screenImages:JQuery[];
 
+        onSetSown():void{
+            console.log('set sown');
+            setTimeout(()=>{
+                this.showFullScreen();
+            },8000);
+        }
         switchNextImage(delay:number):void{
             this.inset++;
-            if(this.inset>=this.screenImages.length) return;
+            if(this.inset>=this.screenImages.length){
+                this.onSetSown();
+                return;
+            }
             var next:ImageData = this.getNext();
             var newImage:JQuery = $('<img>').attr('src',next.filename);
           //  console.log(this.inset);

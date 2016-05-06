@@ -22,6 +22,8 @@ var simple;
             });
             this.createDivs();
             this.serverTimer = setInterval(function () { return _this.loadData(); }, this.serverdelay * 1000);
+            this.$adds = $('<div>').addClass('fullscreen').html('<img src="data/EuroOptimum.jpg">');
+            this.$overlay = $('#Overlay');
         }
         Gallery.prototype.loadData = function () {
             var _this = this;
@@ -30,11 +32,10 @@ var simple;
             });
         };
         Gallery.prototype.start = function () {
-            var _this = this;
             if (this.isRunning)
                 return;
             this.isRunning = true;
-            this.showTimer = setInterval(function () { return _this.showNextSet(_this.imagesDelay * 1000); }, this.showtime * 1000);
+            // this.showTimer = setInterval(()=>this.showNextSet(this.imagesDelay*1000),this.showtime*1000);
         };
         Gallery.prototype.stop = function () {
             clearInterval(this.showTimer);
@@ -42,20 +43,41 @@ var simple;
         };
         Gallery.prototype.showFullScreen = function () {
             var _this = this;
+            console.log('full screen');
             var next = this.getNext();
             var div = $('<div>').append($('<img>').attr('src', next.filename));
             var img = $('<div>').append(div).addClass('fullscreen in');
-            img.appendTo($('body'));
+            img.appendTo(this.$overlay);
             setTimeout(function () {
                 img.removeClass('in');
             }, 20);
             setTimeout(function () {
-                _this.showNextSet(150);
             }, 2000);
             setTimeout(function () {
-                img.fadeOut('fast', function () {
+                // img.fadeOut('fast',() =>{
+                //  img.remove();
+                //  this.start();
+                // });
+                _this.showAdda();
+                setTimeout(function () {
                     img.remove();
-                    _this.start();
+                }, 2000);
+            }, 8000);
+        };
+        Gallery.prototype.showAdda = function () {
+            var _this = this;
+            console.log('showing add');
+            var adds = this.$adds.show().addClass('in').appendTo(this.$overlay);
+            setTimeout(function () {
+                adds.removeClass('in');
+            }, 20);
+            setTimeout(function () {
+                adds.fadeOut('fast', function () {
+                    adds.remove();
+                    // this.start();
+                    setTimeout(function () {
+                        _this.showNextSet(700);
+                    }, 500);
                 });
             }, 10000);
         };
@@ -74,22 +96,31 @@ var simple;
             return this.images[this.current];
         };
         Gallery.prototype.showNextSet = function (delay) {
-            console.log('show next set');
+            console.log('show next set ' + delay);
             this.inset = -1;
-            this.fullSceenCount--;
-            if (this.fullSceenCount < 0) {
-                this.stop();
-                this.showFullScreen();
-                this.fullSceenCount = Math.floor(Math.random() * 7) + 3;
-            }
-            else
-                this.switchNextImage(delay);
+            // this.fullSceenCount --;
+            // if(this.fullSceenCount<0){
+            //  this.stop();
+            // this.showFullScreen();
+            // this.fullSceenCount = Math.floor(Math.random() * 7) + 3  ;
+            //}
+            // else
+            this.switchNextImage(delay);
+        };
+        Gallery.prototype.onSetSown = function () {
+            var _this = this;
+            console.log('set sown');
+            setTimeout(function () {
+                _this.showFullScreen();
+            }, 8000);
         };
         Gallery.prototype.switchNextImage = function (delay) {
             var _this = this;
             this.inset++;
-            if (this.inset >= this.screenImages.length)
+            if (this.inset >= this.screenImages.length) {
+                this.onSetSown();
                 return;
+            }
             var next = this.getNext();
             var newImage = $('<img>').attr('src', next.filename);
             //  console.log(this.inset);
