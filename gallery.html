@@ -53,7 +53,16 @@
             /*#Container {
                 position: relative;
             }*/
-            .fullscreen{
+
+        </style>
+        <div id="MyWindow">
+
+        </div>
+    </div>
+
+    <div id="Overlay">
+        <style>
+            #Overlay .fullscreen{
                 position: absolute;
                 top:0;
                 left: 0;
@@ -65,7 +74,7 @@
                 width: 1920px;
                 height: 1080px;
             }
-            .fullscreen>div{
+            #Overlay .fullscreen>div{
                 width: 100%;
                 height: 100%;
                 position: absolute;
@@ -73,7 +82,7 @@
                 bottom: 0;
             }
 
-            .fullscreen img{
+            #Overlay .fullscreen img{
                 position: absolute;
                 left: 0;
                 top: 0;
@@ -83,11 +92,11 @@
                 height: 101vh;
             }
 
-            .fullscreen.in{
+            #Overlay .fullscreen.in{
                 transform:translateY(-100%);
                 -webkit-transform:translateY(-100%);
             }
-            .fullscreen.inr{
+            #Overlay .fullscreen.inr{
                 width: 101vw;
                 height: 101vh;
                 transform:translateX(100%);
@@ -103,15 +112,8 @@
                 overflow: hidden;
             }
         </style>
-        <div id="MyWindow">
-
-        </div>
-        <div id="Overlay">
-
-        </div>
 
     </div>
-
 
     <script src="js/ImageGalley.js">  </script>
 
