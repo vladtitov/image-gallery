@@ -67,9 +67,9 @@ var simple;
         Gallery.prototype.showAdda = function () {
             var _this = this;
             console.log('showing add');
-            var adds = this.$adds.show().addClass('in').appendTo(this.$overlay);
+            var adds = this.$adds.show().addClass('inr').appendTo(this.$overlay);
             setTimeout(function () {
-                adds.removeClass('in');
+                adds.removeClass('inr');
             }, 20);
             setTimeout(function () {
                 adds.fadeOut('fast', function () {

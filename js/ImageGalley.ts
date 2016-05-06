@@ -95,9 +95,9 @@ module simple{
 
         showAdda():void{
             console.log('showing add');
-            var adds:JQuery = this.$adds.show().addClass('in').appendTo(this.$overlay);
+            var adds:JQuery = this.$adds.show().addClass('inr').appendTo(this.$overlay);
             setTimeout(()=>{
-                adds.removeClass('in');
+                adds.removeClass('inr');
             },20);
             setTimeout(()=>{
                 adds.fadeOut('fast',() =>{
