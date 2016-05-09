@@ -22,6 +22,7 @@ var MoveFiles = (function () {
         var src = this.source;
         var ar = this.listing;
         console.log('before moving ' + ar.length);
+        this.count = ar.length;
         ar.forEach(function (file) { return _this.move(file); });
     };
     MoveFiles.prototype.read = function () {
@@ -36,9 +37,12 @@ var MoveFiles = (function () {
         });
     };
     MoveFiles.prototype.onMoved = function (err, dest) {
-        console.log('moved ' + dest);
+        this.count--;
+        console.log(this.count);
         if (err)
             console.log(err);
+        else
+            console.log('moved ' + dest);
     };
     MoveFiles.prototype.move = function (filename) {
         var _this = this;
@@ -47,8 +51,10 @@ var MoveFiles = (function () {
         fs.exists(dest + '/' + filename, function (exists) {
             if (exists) {
                 fs.remove(dest + '/' + filename, function (err) {
-                    if (err)
+                    if (err) {
+                        _this.count--;
                         console.log(' error remove file ' + dest + '/' + filename);
+                    }
                     else {
                         console.log('removed file ' + dest + '/' + filename);
                         _this.move(filename);
@@ -62,6 +68,7 @@ var MoveFiles = (function () {
     };
     return MoveFiles;
 }());
-var mmover = new MoveFiles(settinngs);
-mmover.read();
+var mover = new MoveFiles(settinngs);
+mover.read();
+mover.start();
 //# sourceMappingURL=delivery.js.map

@@ -27,6 +27,7 @@ class MoveFiles{
         var src:string = this.source;
         var ar = this.listing;
         console.log('before moving ' + ar.length);
+        this.count = ar.length;
         ar.forEach((file)=> this.move(file));
     }
 
@@ -44,21 +45,25 @@ class MoveFiles{
     }
 
 
+    private count:number;
 
     onMoved(err:any,dest:string):void{
-        console.log('moved '+dest);
+        this.count--;
+        console.log(this.count);
         if(err) console.log(err);
-
+        else  console.log('moved '+dest);
     }
-    
+
     private move(filename:string):void{
         var dest:string = this.dest;
         var src:string = this.source;
       fs.exists(dest+'/'+filename,(exists)=>{
           if(exists){
               fs.remove(dest+'/'+filename,(err)=>{
-                  if(err) console.log(' error remove file '+dest+'/'+filename);
-                  else {
+                  if(err){
+                      this.count--;
+                      console.log(' error remove file '+dest+'/'+filename);
+                  }else {
                       console.log('removed file '+dest+'/'+filename);
                       this.move(filename);
                   }
@@ -73,5 +78,6 @@ class MoveFiles{
 }
 
 
-var mmover:MoveFiles = new MoveFiles(settinngs);
-mmover.read();
+var mover:MoveFiles = new MoveFiles(settinngs);
+mover.read();
+mover.start();
