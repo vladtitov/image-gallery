@@ -7,6 +7,6 @@ var fs= require('fs');
 var onScan = function(){
 
 }
-fs.readdir('Z:/source',function(err, files){
+fs.readdir('Z:\source',function(err, files){
     console.log(files);
 })
