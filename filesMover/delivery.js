@@ -3,7 +3,15 @@
  */
 ///<reference path="../js/typings/node.d.ts"/>
 var fs = require('fs-extra');
+var util = require('util');
 var settinngs = JSON.parse(fs.readFileSync('settings.json'));
+var logger = fs.createWriteStream(__dirname + '/logger.log', { flags: 'a' }), err_log = fs.createWriteStream(__dirname + '/error.log', { flags: 'a' });
+console.log = function (d) {
+    logger.write(util.format(d) + '\n');
+};
+console.error = function (d) {
+    err_log.write(util.format(d) + '\n');
+};
 var MoveFiles = (function () {
     function MoveFiles(options) {
         this.fs = fs;
@@ -27,6 +35,7 @@ var MoveFiles = (function () {
     };
     MoveFiles.prototype.read = function () {
         var _this = this;
+        this.onStart();
         var src = this.source;
         this.fs.readdir(src, function (err, list) {
             _this.listing = list;
@@ -36,35 +45,42 @@ var MoveFiles = (function () {
                 console.log('no  files in directory ' + src);
         });
     };
+    MoveFiles.prototype.onStart = function () {
+        console.log(new Date().toLocaleString());
+    };
+    MoveFiles.prototype.onDone = function () {
+        console.log('Done ' + new Date().toLocaleString());
+    };
     MoveFiles.prototype.onMoved = function (err, dest) {
         this.count--;
-        console.log(this.count);
+        if (this.count == 0)
+            this.onDone();
         if (err)
-            console.log(err);
+            console.error(err);
         else
             console.log('moved ' + dest);
     };
     MoveFiles.prototype.move = function (filename) {
         var _this = this;
-        var dest = this.dest;
+        var dest = this.dest + '/' + filename;
         var src = this.source;
-        fs.exists(dest + '/' + filename, function (exists) {
+        var fs = this.fs;
+        fs.exists(dest, function (exists) {
             if (exists) {
-                fs.remove(dest + '/' + filename, function (err) {
+                fs.remove(dest, function (err) {
                     if (err) {
                         _this.count--;
-                        console.log(' error remove file ' + dest + '/' + filename);
+                        console.error(' error remove file ' + dest);
                     }
                     else {
-                        console.log('removed file ' + dest + '/' + filename);
+                        console.log('removed file ' + dest);
                         _this.move(filename);
                     }
                 });
             }
             else
-                _this.fs.move(src + '/' + filename, dest + '/' + filename, function (err) { return _this.onMoved(err, dest + '/' + filename); });
+                _this.fs.move(src + '/' + filename, dest, function (err) { return _this.onMoved(err, dest); });
         });
-        //else this.fs.move(src+'/'+filename,dest+'/'+filename,(err)=>this.onMoved(err,dest+'/'+filename));
     };
     return MoveFiles;
 }());
