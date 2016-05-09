@@ -4,7 +4,6 @@
 ///<reference path="../js/typings/node.d.ts"/>
 var fs = require('fs-extra');
 var settinngs = JSON.parse(fs.readFileSync('settings.json'));
-console.log(settinngs);
 var MoveFiles = (function () {
     function MoveFiles(options) {
         this.fs = fs;
@@ -45,7 +44,21 @@ var MoveFiles = (function () {
         var _this = this;
         var dest = this.dest;
         var src = this.source;
-        this.fs.move(src + '/' + filename, dest + '/' + filename, function (err) { return _this.onMoved(err, dest + '/' + filename); });
+        fs.exists(dest + '/' + filename, function (exists) {
+            if (exists) {
+                fs.remove(dest + '/' + filename, function (err) {
+                    if (err)
+                        console.log(' error remove file ' + dest + '/' + filename);
+                    else {
+                        console.log('removed file ' + dest + '/' + filename);
+                        _this.move(filename);
+                    }
+                });
+            }
+            else
+                _this.fs.move(src + '/' + filename, dest + '/' + filename, function (err) { return _this.onMoved(err, dest + '/' + filename); });
+        });
+        //else this.fs.move(src+'/'+filename,dest+'/'+filename,(err)=>this.onMoved(err,dest+'/'+filename));
     };
     return MoveFiles;
 }());
