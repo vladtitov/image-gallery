@@ -1,0 +1,14 @@
+{
+  "name": "filesMover",
+  "version": "1.0.0",
+  "description": "",
+  "main": "delivery.js",
+  "scripts": {
+    "start": "delivery.js"
+  },
+  "author": "Vlad",
+  "license": "ISC",
+  "dependencies": {
+    "fs-extra": "^0.30.0"
+  }
+}
