@@ -8,7 +8,7 @@ var onScan = function(){
 
 }
 var source = 'C://source';
-var dest ="c://wamp/www/GitHub/image-gallery/data/new_pics/";
+var dest ="c://wamp/www/GitHub/image-gallery/data/raw_pics/";
 fs.readdir(source,function(err, list){
         list.forEach(function(file) {
         var path = source + '/' + file;
