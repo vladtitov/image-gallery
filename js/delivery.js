@@ -5,7 +5,16 @@
 var fs = require('fs');
 var onScan = function () {
 };
-fs.readdir('Z:\source', function (err, files) {
-    console.log(files);
+var source = 'C://source';
+var dest = "c://wamp/www/GitHub/image-gallery/data/new_pics/";
+fs.readdir(source, function (err, list) {
+    list.forEach(function (file) {
+        var path = source + '/' + file;
+        fs.rename(path, dest + file, function (res) {
+            console.log(dest + file);
+        });
+        // var stat = fs.statSync(file);
+        // console.log(stat);
+    });
 });
 //# sourceMappingURL=delivery.js.map
