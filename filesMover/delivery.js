@@ -15,6 +15,7 @@ console.error = function (d) {
 var MoveFiles = (function () {
     function MoveFiles(options) {
         this.fs = fs;
+        this.copiyed = [];
         for (var str in options)
             this[str] = options[str];
     }
@@ -31,7 +32,11 @@ var MoveFiles = (function () {
         var ar = this.listing;
         console.log('before moving ' + ar.length);
         this.count = ar.length;
-        ar.forEach(function (file) { return _this.move(file); });
+        ar.forEach(function (file) {
+            if (_this.copiyed.indexOf(file) === -1)
+                _this.copy(file);
+            // console.log(this.copiyed.indexOf(file));
+        });
     };
     MoveFiles.prototype.read = function () {
         var _this = this;
@@ -80,6 +85,26 @@ var MoveFiles = (function () {
             }
             else
                 _this.fs.move(src + '/' + filename, dest, function (err) { return _this.onMoved(err, dest); });
+        });
+    };
+    MoveFiles.prototype.onCopy = function (err, filename) {
+        if (err)
+            console.error(err);
+        else {
+            console.log('copy done ' + filename);
+            this.copiyed.push(filename);
+        }
+    };
+    MoveFiles.prototype.copy = function (filename) {
+        var _this = this;
+        var dest = this.dest + '/' + filename;
+        var src = this.source;
+        var fs = this.fs;
+        fs.exists(dest, function (exists) {
+            if (exists)
+                _this.copiyed.push(filename);
+            else
+                _this.fs.copy(src + '/' + filename, dest, function (err) { return _this.onCopy(err, filename); });
         });
     };
     return MoveFiles;

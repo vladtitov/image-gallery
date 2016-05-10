@@ -24,6 +24,7 @@ class MoveFiles{
     fs:any = fs;
     listing:string[];
     mytimer:any;
+    copiyed:string[]=[];
     constructor(options){
         for(var str in options) this[str] = options[str];
 
@@ -40,7 +41,10 @@ class MoveFiles{
         var ar = this.listing;
         console.log('before moving ' + ar.length);
         this.count = ar.length;
-        ar.forEach((file)=> this.move(file));
+        ar.forEach((file)=>{
+            if(this.copiyed.indexOf(file) === -1) this.copy(file);
+           // console.log(this.copiyed.indexOf(file));
+        });
     }
 
     read():void {
@@ -50,8 +54,6 @@ class MoveFiles{
             this.listing = list;
             if(list.length) this.onFiles();
             else console.log('no  files in directory '+src);
-
-
         })
 
     }
@@ -89,6 +91,23 @@ class MoveFiles{
                   })
               }else this.fs.move(src+'/'+filename,dest,(err)=>this.onMoved(err,dest));
           })
+
+    }
+    private onCopy(err,filename):void{
+        if(err)console.error(err);
+        else {
+            console.log('copy done '+filename);
+            this.copiyed.push(filename);
+        }
+    }
+    private copy(filename:string):void{
+        var dest:string = this.dest+'/'+filename;
+        var src:string = this.source;
+        var fs = this.fs;
+        fs.exists(dest,(exists)=>{
+            if(exists) this.copiyed.push(filename);
+            else this.fs.copy(src+'/'+filename,dest,(err)=>this.onCopy(err,filename));
+        })
 
     }
 
