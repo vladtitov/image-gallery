@@ -5,44 +5,47 @@
  * Created by Vlad on 5/9/2016.
  */
 ///<reference path="../js/typings/node.d.ts"/>
+///<reference path="../js/typings/fs-extra.d.ts"/>
 
-var fs= require('fs-extra');
+
+import fs = require('fs-extra');
 var util = require('util');
-
-var settinngs = JSON.parse(fs.readFileSync('settings.json'));
+var Jimp = require("jimp");
+var settinngs = JSON.parse(fs.readFileSync('settings.json').toString());
 
 var logger = fs.createWriteStream(__dirname  + '/logger.log', { flags: 'a' })
     , err_log = fs.createWriteStream(__dirname  + '/error.log', { flags: 'a' });
 
-console.log = function(d) { //
+/*console.log = function(d) { //
     logger.write(util.format(d) + '\n');
 };
 console.error = function(d) { //
     err_log.write(util.format(d) + '\n');
-};
+};*/
 
 class MoveFiles{
     source:string;
     dest:string;
     delay:number;
     fs:any = fs;
-    listing:string[];
+    jimp:any = Jimp;
+    sourceList:string[];
+    destList:string[];
     mytimer:any;
     copiyed:string[]=[];
     constructor(options){
         for(var str in options) this[str] = options[str];
-
     }
 
     start():void{
-        this.mytimer = setInterval(()=>this.read(), this.delay*1000);
+       // this.mytimer = setInterval(()=>this.read(), this.delay*1000);
     }
     storp():void{
         clearInterval(this.mytimer);
     }
-    onFiles():void{
+    copySource():void{
         var src:string = this.source;
-        var ar = this.listing;
+        var ar = this.sourceList;
         console.log('files in source ' + ar.length);
         this.count = ar.length;
         ar.forEach((file)=>{
@@ -51,7 +54,26 @@ class MoveFiles{
         });
     }
 
-    read():void {
+    readListings(onDone:Function,onErr:Function):void{
+        var folder = this.dest;
+        this.fs.readdir(folder,(err,list1)=>{
+            if(err)onErr(err);
+           else{
+                folder = this.source;
+                this.fs.readdir(folder,(err,list2)=>{
+                   if(err)onErr(err);
+                    else onDone(list1,list2);
+                });
+            }
+
+        })
+    }
+
+    removeOldFiles():void{
+
+
+    }
+   /* read():void {
         this.onStart();
         var src:string = this.source;
         this.fs.readdir(src,(err,list)=>{
@@ -61,7 +83,7 @@ class MoveFiles{
         })
 
     }
-
+*/
     onStart():void{
         console.log(new Date().toLocaleString())
     }
@@ -106,6 +128,7 @@ class MoveFiles{
             this.copiyed.push(filename);
         }
     }
+
     private copy(filename:string):void{
         var dest:string = this.dest+'/'+filename;
         var src:string = this.source;
@@ -122,5 +145,6 @@ class MoveFiles{
 
 
 var mover:MoveFiles = new MoveFiles(settinngs);
-mover.read();
+
+//mover.read();
 mover.start();

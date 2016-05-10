@@ -3,6 +3,7 @@
 /filesMover/node_modules
 /filesMover/settings.json
 /filesMover/delivery.ts
+/imageProcess/node_modules
 /.idea
 /js/ImageGalley.ts
 /filesMover/*.log
