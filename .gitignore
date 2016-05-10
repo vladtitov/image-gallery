@@ -2,4 +2,5 @@
 /data/raw_pics
 /filesMover/node_modules
 /filesMover/settings.json
+/filesMover/delivery.ts
 /.idea
