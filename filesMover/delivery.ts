@@ -39,7 +39,7 @@ class MoveFiles{
     onFiles():void{
         var src:string = this.source;
         var ar = this.listing;
-        console.log('before moving ' + ar.length);
+        console.log('files in source ' + ar.length);
         this.count = ar.length;
         ar.forEach((file)=>{
             if(this.copiyed.indexOf(file) === -1) this.copy(file);

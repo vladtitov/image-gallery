@@ -30,7 +30,7 @@ var MoveFiles = (function () {
         var _this = this;
         var src = this.source;
         var ar = this.listing;
-        console.log('before moving ' + ar.length);
+        console.log('files in source ' + ar.length);
         this.count = ar.length;
         ar.forEach(function (file) {
             if (_this.copiyed.indexOf(file) === -1)
