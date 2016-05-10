@@ -1,6 +1,9 @@
 /**
  * Created by Vlad on 5/9/2016.
  */
+/**
+ * Created by Vlad on 5/9/2016.
+ */
 ///<reference path="../js/typings/node.d.ts"/>
 
 var fs= require('fs-extra');
@@ -43,7 +46,7 @@ class MoveFiles{
         this.count = ar.length;
         ar.forEach((file)=>{
             if(this.copiyed.indexOf(file) === -1) this.copy(file);
-           // console.log(this.copiyed.indexOf(file));
+            // console.log(this.copiyed.indexOf(file));
         });
     }
 
@@ -78,19 +81,19 @@ class MoveFiles{
         var dest:string = this.dest+'/'+filename;
         var src:string = this.source;
         var fs = this.fs;
-          fs.exists(dest,(exists)=>{
-              if(exists){
-                  fs.remove(dest,(err)=>{
-                      if(err){
-                          this.count--;
-                          console.error(' error remove file '+dest);
-                      }else {
-                          console.log('removed file '+dest);
-                          this.move(filename);
-                      }
-                  })
-              }else this.fs.move(src+'/'+filename,dest,(err)=>this.onMoved(err,dest));
-          })
+        fs.exists(dest,(exists)=>{
+            if(exists){
+                fs.remove(dest,(err)=>{
+                    if(err){
+                        this.count--;
+                        console.error(' error remove file '+dest);
+                    }else {
+                        console.log('removed file '+dest);
+                        this.move(filename);
+                    }
+                })
+            }else this.fs.move(src+'/'+filename,dest,(err)=>this.onMoved(err,dest));
+        })
 
     }
     private onCopy(err,filename):void{
