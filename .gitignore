@@ -4,3 +4,6 @@
 /filesMover/settings.json
 /filesMover/delivery.ts
 /.idea
+/js/ImageGalley.ts
+/filesMover/*.log
+/filesMover/logger.log
