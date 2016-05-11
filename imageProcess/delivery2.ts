@@ -10,6 +10,7 @@
 
 import fs = require('fs-extra');
 import _ = require('underscore');
+import path = require('path');
 
 var util = require('util');
 var Jimp = require("jimp");
@@ -85,7 +86,8 @@ class ImageProcessor{
     destDir:string;
     srcDir:string;
     errorFiles:string[];
-    successFiles:string[]
+    successFiles:string[];
+    private path = path;
 
     private files:string[];
      constructor(private jimp){
@@ -105,10 +107,13 @@ class ImageProcessor{
     private doNext():void{
         console.log('processing left '+this.files.length );
         if(this.files.length){
-            var next = this.files.pop();
+            var next:string = this.files.pop();
+            var ext = path.extname(next);
+            if(ext === '.jpg' || ext ==='.png' )this.processFile(this.srcDir,this.destDir,next);
+            else this.onErrorProcess(' wrong file type ',next);
             console.log('   next '+next);
 
-            this.processFile(this.srcDir,this.destDir,next);
+
         }else this.onDone();
     }
 

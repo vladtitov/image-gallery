@@ -10,6 +10,7 @@
 "use strict";
 var fs = require('fs-extra');
 var _ = require('underscore');
+var path = require('path');
 var util = require('util');
 var Jimp = require("jimp");
 var logger = fs.createWriteStream(__dirname + '/logger.log', { flags: 'a' }), err_log = fs.createWriteStream(__dirname + '/error.log', { flags: 'a' });
@@ -67,6 +68,7 @@ var FileCopyer = (function () {
 var ImageProcessor = (function () {
     function ImageProcessor(jimp) {
         this.jimp = jimp;
+        this.path = path;
     }
     ImageProcessor.prototype.onDone = function () {
         console.log('ImageProcessor  done');
@@ -87,8 +89,12 @@ var ImageProcessor = (function () {
         console.log('processing left ' + this.files.length);
         if (this.files.length) {
             var next = this.files.pop();
+            var ext = path.extname(next);
+            if (ext === '.jpg' || ext === '.png')
+                this.processFile(this.srcDir, this.destDir, next);
+            else
+                this.onErrorProcess(' wrong file type ', next);
             console.log('   next ' + next);
-            this.processFile(this.srcDir, this.destDir, next);
         }
         else
             this.onDone();
