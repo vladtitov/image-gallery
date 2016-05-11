@@ -94,9 +94,10 @@ var ImageProcessor = (function () {
             var ext = path.extname(next);
             if (ext === '.jpg' || ext === '.png')
                 this.processFile(this.srcDir, this.destDir, next);
-            else
-                this.onErrorProcess(' wrong file type ', next);
-            Log('   next ' + next);
+            else {
+                this.onErrorProcess(' wrong file type ' + next, next);
+                this.doNext();
+            }
         }
         else
             this.onDone();
