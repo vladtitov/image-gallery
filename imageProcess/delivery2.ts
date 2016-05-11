@@ -106,7 +106,7 @@ class ImageProcessor{
         console.log('processing left '+this.files.length );
         if(this.files.length){
             var next = this.files.pop();
-            console.log('next '+next);
+            console.log('   next '+next);
 
             this.processFile(this.srcDir,this.destDir,next);
         }else this.onDone();
