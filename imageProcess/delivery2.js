@@ -20,6 +20,9 @@ var logger = fs.createWriteStream(__dirname + '/logger.log', { flags: 'a' }), er
 console.error = function(d) { //
     err_log.write(util.format(d) + '\n');
 };*/
+console.error = function (d) {
+    console.log(d);
+};
 var FileCopyer = (function () {
     function FileCopyer(fs) {
         this.fs = fs;

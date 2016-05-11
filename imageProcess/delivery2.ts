@@ -26,6 +26,10 @@ console.error = function(d) { //
     err_log.write(util.format(d) + '\n');
 };*/
 
+console.error = function(d) { //
+   console.log(d);
+};
+
 
 class FileCopyer{
     onDone(){
@@ -110,7 +114,7 @@ class ImageProcessor{
             var next:string = this.files.pop();
             var ext = path.extname(next);
             if(ext === '.jpg' || ext ==='.png' )this.processFile(this.srcDir,this.destDir,next);
-            else this.onErrorProcess(' wrong file type ',next);
+            else this.onErrorProcess(' wrong file type ', next);
             console.log('   next '+next);
 
 
