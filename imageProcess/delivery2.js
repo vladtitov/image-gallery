@@ -46,7 +46,13 @@ var FileCopyer = (function () {
     FileCopyer.prototype.doNext = function () {
         if (this.files.length) {
             var next = this.files.pop();
-            this.copyFile(this.srcDir, this.destDir, next);
+            var ext = path.extname(next);
+            if (ext === '.jpg' || ext === '.png')
+                this.copyFile(this.srcDir, this.destDir, next);
+            else {
+                this.onErrorCopy(' wrong file type ' + next, next);
+                this.doNext();
+            }
         }
         else
             this.onDone();
@@ -93,13 +99,7 @@ var ImageProcessor = (function () {
         console.log('processing left ' + this.files.length);
         if (this.files.length) {
             var next = this.files.pop();
-            var ext = path.extname(next);
-            if (ext === '.jpg' || ext === '.png')
-                this.processFile(this.srcDir, this.destDir, next);
-            else {
-                this.onErrorProcess(' wrong file type ' + next, next);
-                this.doNext();
-            }
+            this.processFile(this.srcDir, this.destDir, next);
         }
         else
             this.onDone();
