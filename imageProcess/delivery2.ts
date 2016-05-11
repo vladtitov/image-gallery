@@ -139,7 +139,7 @@ class ImageProcessor{
                 .quality(80)
                 .write(dest);
             this.onSuccessProcess(file);
-            this.doNext();
+           setTimeout(()=>this.doNext(),1200);
         }).catch((err)=> {
             this.onError(err);
             this.onErrorProcess(err,file);

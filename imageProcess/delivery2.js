@@ -117,7 +117,7 @@ var ImageProcessor = (function () {
                 .quality(80)
                 .write(dest);
             _this.onSuccessProcess(file);
-            _this.doNext();
+            setTimeout(function () { return _this.doNext(); }, 1200);
         }).catch(function (err) {
             _this.onError(err);
             _this.onErrorProcess(err, file);

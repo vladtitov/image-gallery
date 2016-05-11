@@ -6,7 +6,7 @@ define('RANDOM',DATA.'/random_pics');
 define('MIN',36);
 $stamp = 0;
 $out = new stdClass();
-if(isset($_GET['stamp']))$stamp = $_GET['stamp'];
+if(isset($_GET['stamp']))$stamp =(int) $_GET['stamp'];
 define('STAMP',$stamp);
 if($stamp){
     $new_pic = getListing(NEW_PICS);

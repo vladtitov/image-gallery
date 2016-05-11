@@ -7,6 +7,10 @@ var simple;
     var Gallery = (function () {
         function Gallery(options) {
             var _this = this;
+            this.images = [];
+            this.newImages = [];
+            this.newImageCurrent = 0;
+            this.stamp = 0;
             this.showtime = 10;
             this.serverdelay = 60;
             this.fullSceenCount = 1;
@@ -21,7 +25,7 @@ var simple;
                 _this.showNextSet(150);
             });
             this.createDivs();
-            this.serverTimer = setInterval(function () { return _this.loadData(); }, this.serverdelay * 1000);
+            this.serverTimer = setInterval(function () { return _this.loadNewImages(); }, this.serverdelay * 1000);
             this.$adds = $('<div>').addClass('fullscreen').html('<img src="data/EuroOptimum.jpg">');
             this.$overlay = $('#Overlay');
         }
@@ -29,6 +33,26 @@ var simple;
             var _this = this;
             return $.get('service/get-pic.php').done(function (res) {
                 _this.images = res.pics;
+                console.log('old  images  ' + _this.images.length);
+                if (_this.images.length) {
+                    _this.stamp = Number(_this.images[0].filemtime);
+                    console.log(_this.stamp);
+                }
+            }).fail(function (err) {
+                setTimeout(function () { return _this.loadData(); }, 60000);
+            });
+        };
+        Gallery.prototype.loadNewImages = function () {
+            var _this = this;
+            $.get('service/get-new-then.php', { stamp: this.stamp }).done(function (res) {
+                var ar = res.pics;
+                console.log(' new length ' + ar.length);
+                if (ar.length) {
+                    _this.stamp = ar[0].filemtime;
+                    console.log(_this.stamp);
+                    _this.newImages = _this.newImages.concat(ar);
+                }
+            }).fail(function (err) {
             });
         };
         Gallery.prototype.start = function () {
@@ -90,9 +114,27 @@ var simple;
             }
         };
         Gallery.prototype.getNext = function () {
+            var _this = this;
+            if (this.newImages.length) {
+                this.newImageCurrent++;
+                if (this.newImageCurrent >= this.newImages.length) {
+                    this.newImageCurrent = -1;
+                    this.newImages = [];
+                    console.log(' no more new iages ');
+                }
+                else {
+                    console.log(' getting a new image ' + this.newImageCurrent);
+                    return this.newImages[this.newImageCurrent];
+                }
+            }
             this.current++;
-            if (this.current >= this.images.length)
+            if (this.current >= this.images.length) {
                 this.current = 0;
+                if (this.images.length > 20)
+                    this.loadData();
+                else
+                    setTimeout(function () { return _this.loadData(); }, 20000);
+            }
             return this.images[this.current];
         };
         Gallery.prototype.showNextSet = function (delay) {
