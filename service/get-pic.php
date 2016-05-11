@@ -39,11 +39,11 @@ function getListing($folder){
 function getImagPearams($pref,$filename){
     $out = new stdClass();
     $out ->filename=$filename;
-  //  $out->filemtime = filemtime($pref.$filename);
+    $out->filemtime = filemtime($pref.$filename);
 
-    $out->filemtime =  getlastmod($pref.$filename);
-    $out->filectime = filectime($pref.$filename);
-   // $out->filemtimeD = date ("F d Y H:i:s.",$out->filemtime);
+   // $out->filemtime =  getlastmod($pref.$filename);
+    //$out->filectime = filectime($pref.$filename);
+  $out->filemtimeD = date ("F d Y H:i:s.",$out->filemtime);
    // $out->filectimeD = date ("F d Y H:i:s.",$out->filectime);
     if(@is_array(getimagesize($pref.$filename))) $out -> info = getimagesize($pref.$filename);
     else return 0;
