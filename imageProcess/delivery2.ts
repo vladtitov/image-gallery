@@ -19,14 +19,17 @@ var Jimp = require("jimp");
 var logger = fs.createWriteStream(__dirname  + '/logger.log', { flags: 'a' })
     , err_log = fs.createWriteStream(__dirname  + '/error.log', { flags: 'a' });
 
-var Log = function(d) {
-    console.log(d);
+
+/*
+console.log  = function(d) {
     logger.write(util.format(d) + '\n');
 };
-var Err = function (d) {
+
+console.error = function (d) {
     err_log.write(util.format(d) + '\n');
-    console.log(d);
+
 }
+*/
 
 
 
@@ -34,10 +37,10 @@ var Err = function (d) {
 
 class FileCopyer{
     onDone(){
-        Log('ImageProcessor  done');
+        console.log('ImageProcessor  done');
     }
     onError(err){
-        Err(err);
+       console.error(err);
     }
     destDir:string;
     srcDir:string;
@@ -83,10 +86,10 @@ class FileCopyer{
 
 class ImageProcessor{
     onDone(){
-        Log('ImageProcessor  done');
+        console.log('ImageProcessor  done');
     }
     onError(err){
-        Err(err);
+        console.error(err);
     }
     destDir:string;
     srcDir:string;
@@ -110,7 +113,7 @@ class ImageProcessor{
         this.successFiles.push(file);
     }
     private doNext():void{
-        Log('processing left '+this.files.length );
+        console.log('processing left '+this.files.length );
         if(this.files.length){
             var next:string = this.files.pop();
             var ext = path.extname(next);
@@ -163,15 +166,15 @@ imageProcessor.destDir = settinngs.dest;
 
 
 imageProcessor.onDone = ()=>{
-    Log(' process  success: ' + imageProcessor.successFiles.length + ' errors: '+imageProcessor.errorFiles.length);
+    console.log(' process  success: ' + imageProcessor.successFiles.length + ' errors: '+imageProcessor.errorFiles.length);
     fs.readdir(settinngs.raw,(err,list)=>{
-        if(err)Err(err);
+        if(err)console.error(err);
         else removeFiles(settinngs.raw,list);
     });
     onProcessDone();
 }
 var onProcessDone = function () {
-   Log(new Date().toLocaleString()+' done');
+   console.log(new Date().toLocaleString()+' done');
     clearTimeout(mytimer);
     mytimer = setTimeout(()=>startProcess(),settinngs.delay *1000);
 }
@@ -179,7 +182,7 @@ var onProcessDone = function () {
 
 copyer.onDone = ()=>{
     var ar:string[] = copyer.successFiles;
-    Log(' copy  success: ' + copyer.successFiles.length + ' errors: '+copyer.errorFiles.length);
+    console.log(' copy  success: ' + copyer.successFiles.length + ' errors: '+copyer.errorFiles.length);
     imageProcessor.process(ar);
 }
 
@@ -207,11 +210,11 @@ var compareLists = function( listDest:string[],listSource:string[]){
     var new_files:string[] =  _.difference(listSource,listDest);
 
     if(extra_files.length){
-        Log('removing extra '+extra_files.toString());
+        console.log('removing extra '+extra_files.toString());
         removeFiles(settinngs.dest,extra_files);
     }
     if(new_files.length){
-       Log(' got new files '+ new_files.length);
+       console.log(' got new files '+ new_files.length);
         copyer.copy(new_files);
     }
     else onProcessDone();
@@ -220,12 +223,12 @@ var compareLists = function( listDest:string[],listSource:string[]){
 
 
 var startProcess = function(){
-    Log(new Date().toDateString()+' startProcess');
+    console.log(new Date().toDateString()+' startProcess');
     fs.readdir(settinngs.dest,(err,list1)=>{
-        if(err)Err(err);
+        if(err)console.error(err);
         else{
             fs.readdir(settinngs.source,(err,list2)=>{
-                if(err)Err(err);
+                if(err)console.error(err);
                 else compareLists(list1,list2);
             });
         }

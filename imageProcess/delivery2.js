@@ -14,23 +14,25 @@ var path = require('path');
 var util = require('util');
 var Jimp = require("jimp");
 var logger = fs.createWriteStream(__dirname + '/logger.log', { flags: 'a' }), err_log = fs.createWriteStream(__dirname + '/error.log', { flags: 'a' });
-var Log = function (d) {
-    console.log(d);
+/*
+console.log  = function(d) {
     logger.write(util.format(d) + '\n');
 };
-var Err = function (d) {
+
+console.error = function (d) {
     err_log.write(util.format(d) + '\n');
-    console.log(d);
-};
+
+}
+*/
 var FileCopyer = (function () {
     function FileCopyer(fs) {
         this.fs = fs;
     }
     FileCopyer.prototype.onDone = function () {
-        Log('ImageProcessor  done');
+        console.log('ImageProcessor  done');
     };
     FileCopyer.prototype.onError = function (err) {
-        Err(err);
+        console.error(err);
     };
     FileCopyer.prototype.copy = function (files) {
         this.files = files;
@@ -73,10 +75,10 @@ var ImageProcessor = (function () {
         this.path = path;
     }
     ImageProcessor.prototype.onDone = function () {
-        Log('ImageProcessor  done');
+        console.log('ImageProcessor  done');
     };
     ImageProcessor.prototype.onError = function (err) {
-        Err(err);
+        console.error(err);
     };
     ImageProcessor.prototype.process = function (list) {
         this.files = list;
@@ -88,7 +90,7 @@ var ImageProcessor = (function () {
         this.successFiles.push(file);
     };
     ImageProcessor.prototype.doNext = function () {
-        Log('processing left ' + this.files.length);
+        console.log('processing left ' + this.files.length);
         if (this.files.length) {
             var next = this.files.pop();
             var ext = path.extname(next);
@@ -132,23 +134,23 @@ var imageProcessor = new ImageProcessor(Jimp);
 imageProcessor.srcDir = settinngs.raw;
 imageProcessor.destDir = settinngs.dest;
 imageProcessor.onDone = function () {
-    Log(' process  success: ' + imageProcessor.successFiles.length + ' errors: ' + imageProcessor.errorFiles.length);
+    console.log(' process  success: ' + imageProcessor.successFiles.length + ' errors: ' + imageProcessor.errorFiles.length);
     fs.readdir(settinngs.raw, function (err, list) {
         if (err)
-            Err(err);
+            console.error(err);
         else
             removeFiles(settinngs.raw, list);
     });
     onProcessDone();
 };
 var onProcessDone = function () {
-    Log(new Date().toLocaleString() + ' done');
+    console.log(new Date().toLocaleString() + ' done');
     clearTimeout(mytimer);
     mytimer = setTimeout(function () { return startProcess(); }, settinngs.delay * 1000);
 };
 copyer.onDone = function () {
     var ar = copyer.successFiles;
-    Log(' copy  success: ' + copyer.successFiles.length + ' errors: ' + copyer.errorFiles.length);
+    console.log(' copy  success: ' + copyer.successFiles.length + ' errors: ' + copyer.errorFiles.length);
     imageProcessor.process(ar);
 };
 var mytimer;
@@ -167,25 +169,25 @@ var compareLists = function (listDest, listSource) {
     var extra_files = _.difference(listDest, listSource);
     var new_files = _.difference(listSource, listDest);
     if (extra_files.length) {
-        Log('removing extra ' + extra_files.toString());
+        console.log('removing extra ' + extra_files.toString());
         removeFiles(settinngs.dest, extra_files);
     }
     if (new_files.length) {
-        Log(' got new files ' + new_files.length);
+        console.log(' got new files ' + new_files.length);
         copyer.copy(new_files);
     }
     else
         onProcessDone();
 };
 var startProcess = function () {
-    Log(new Date().toDateString() + ' startProcess');
+    console.log(new Date().toDateString() + ' startProcess');
     fs.readdir(settinngs.dest, function (err, list1) {
         if (err)
-            Err(err);
+            console.error(err);
         else {
             fs.readdir(settinngs.source, function (err, list2) {
                 if (err)
-                    Err(err);
+                    console.error(err);
                 else
                     compareLists(list1, list2);
             });
