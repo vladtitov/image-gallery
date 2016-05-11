@@ -20,7 +20,6 @@ var logger = fs.createWriteStream(__dirname  + '/logger.log', { flags: 'a' })
     , err_log = fs.createWriteStream(__dirname  + '/error.log', { flags: 'a' });
 
 
-/*
 console.log  = function(d) {
     logger.write(util.format(d) + '\n');
 };
@@ -29,7 +28,6 @@ console.error = function (d) {
     err_log.write(util.format(d) + '\n');
 
 }
-*/
 
 
 
