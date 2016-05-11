@@ -6,12 +6,14 @@
  */
 ///<reference path="../js/typings/node.d.ts"/>
 ///<reference path="../js/typings/fs-extra.d.ts"/>
-
+///<reference path="../js/typings/underscore.d.ts"/>
 
 import fs = require('fs-extra');
+import _ = require('underscore');
+
 var util = require('util');
 var Jimp = require("jimp");
-var settinngs = JSON.parse(fs.readFileSync('settings.json').toString());
+
 
 var logger = fs.createWriteStream(__dirname  + '/logger.log', { flags: 'a' })
     , err_log = fs.createWriteStream(__dirname  + '/error.log', { flags: 'a' });
@@ -23,128 +25,203 @@ console.error = function(d) { //
     err_log.write(util.format(d) + '\n');
 };*/
 
-class MoveFiles{
-    source:string;
-    dest:string;
-    delay:number;
-    fs:any = fs;
-    jimp:any = Jimp;
-    sourceList:string[];
-    destList:string[];
-    mytimer:any;
-    copiyed:string[]=[];
-    constructor(options){
-        for(var str in options) this[str] = options[str];
+
+class FileCopyer{
+    onDone(){
+        console.log('ImageProcessor  done');
+    }
+    onError(err){
+        console.error(err)
+    }
+    destDir:string;
+    srcDir:string;
+    private files:string[];
+    errorFiles:string[];
+    successFiles:string[];
+    constructor(private fs:any){
+
+    }
+    copy(files:string[]){
+        this.files = files;
+        this.errorFiles =[];
+        this.successFiles=[];
+        this.doNext();
     }
 
-    start():void{
-       // this.mytimer = setInterval(()=>this.read(), this.delay*1000);
+
+    private onFileCopied(file:string){
+        this.successFiles.push(file);
     }
-    storp():void{
-        clearInterval(this.mytimer);
+    private doNext():void{
+        if(this.files.length){
+            var next = this.files.pop();
+            this.copyFile(this.srcDir,this.destDir,next);
+        }else this.onDone();
     }
-    copySource():void{
-        var src:string = this.source;
-        var ar = this.sourceList;
-        console.log('files in source ' + ar.length);
-        this.count = ar.length;
-        ar.forEach((file)=>{
-            if(this.copiyed.indexOf(file) === -1) this.copy(file);
-            // console.log(this.copiyed.indexOf(file));
+
+    private onErrorCopy(err,file):void{
+        this.errorFiles.push(file);
+        this.onError(err);
+    }
+    private copyFile(src:string,dest:string,file:string){
+        src=src+'/'+file;
+        dest=dest+'/'+file;
+        this.fs.copy(src,dest,(err)=>{
+            if(err)this.onErrorCopy(err,file);
+            else this.onFileCopied(file);
+            this.doNext();
+        })
+    }
+}
+
+
+class ImageProcessor{
+    onDone(){
+        console.log('ImageProcessor  done');
+    }
+    onError(err){
+        console.error(err)
+    }
+    destDir:string;
+    srcDir:string;
+    errorFiles:string[];
+    successFiles:string[]
+
+    private files:string[];
+     constructor(private jimp){
+
+     }
+
+    process(list:string[]):void{
+        this.files = list;
+        this.successFiles =[];
+        this.errorFiles=[];
+        this.doNext();
+    }
+
+    private onSuccessProcess(file:string){
+        this.successFiles.push(file);
+    }
+    private doNext():void{
+        console.log('processing left '+this.files.length );
+        if(this.files.length){
+            var next = this.files.pop();
+            this.processFile(this.srcDir,this.destDir,next);
+        }else this.onDone();
+    }
+
+    private onErrorProcess(err,file):void{
+        this.errorFiles.push(file);
+        this.onError(err);
+    }
+
+    private processFile(src:string,dest:string,file:string){
+
+        src=src+'/'+file;
+        dest=dest+'/'+file;
+        this.jimp.read(src).then((lenna)=> {
+            lenna.resize(1920, 1080)
+                .quality(80)
+                .write(dest);
+            this.onSuccessProcess(file);
+            this.doNext();
+        }).catch((err)=> {
+            console.error(err);
+            this.onErrorProcess(err,file);
         });
-    }
-
-    readListings(onDone:Function,onErr:Function):void{
-        var folder = this.dest;
-        this.fs.readdir(folder,(err,list1)=>{
-            if(err)onErr(err);
-           else{
-                folder = this.source;
-                this.fs.readdir(folder,(err,list2)=>{
-                   if(err)onErr(err);
-                    else onDone(list1,list2);
-                });
-            }
-
-        })
-    }
-
-    removeOldFiles():void{
-
-
-    }
-   /* read():void {
-        this.onStart();
-        var src:string = this.source;
-        this.fs.readdir(src,(err,list)=>{
-            this.listing = list;
-            if(list.length) this.onFiles();
-            else console.log('no  files in directory '+src);
-        })
-
-    }
-*/
-    onStart():void{
-        console.log(new Date().toLocaleString())
-    }
-    onDone():void{
-        console.log('Done '+new Date().toLocaleString());
-
-    }
-
-    private count:number;
-
-    onMoved(err:any,dest:string):void{
-        this.count--;
-        if(this.count==0)this.onDone();
-        if(err) console.error(err);
-        else  console.log('moved '+dest);
-    }
-
-    private move(filename:string):void{
-        var dest:string = this.dest+'/'+filename;
-        var src:string = this.source;
-        var fs = this.fs;
-        fs.exists(dest,(exists)=>{
-            if(exists){
-                fs.remove(dest,(err)=>{
-                    if(err){
-                        this.count--;
-                        console.error(' error remove file '+dest);
-                    }else {
-                        console.log('removed file '+dest);
-                        this.move(filename);
-                    }
-                })
-            }else this.fs.move(src+'/'+filename,dest,(err)=>this.onMoved(err,dest));
-        })
-
-    }
-
-    private onCopy(err,filename):void{
-        if(err)console.error(err);
-        else {
-            console.log('copy done '+filename);
-            this.copiyed.push(filename);
-        }
-    }
-
-    private copy(filename:string):void{
-        var dest:string = this.dest+'/'+filename;
-        var src:string = this.source;
-        var fs = this.fs;
-        fs.exists(dest,(exists)=>{
-            if(exists) this.copiyed.push(filename);
-            else this.fs.copy(src+'/'+filename,dest,(err)=>this.onCopy(err,filename));
-        })
-
     }
 
 
 }
 
 
-var mover:MoveFiles = new MoveFiles(settinngs);
+var settinngs = JSON.parse(fs.readFileSync('settings.json').toString());
 
-//mover.read();
-mover.start();
+var copyer = new FileCopyer(fs);
+copyer.destDir = settinngs.raw;
+copyer.srcDir = settinngs.source;
+
+//var mover:MoveFiles = new MoveFiles(settinngs);
+
+var imageProcessor = new ImageProcessor(Jimp);
+
+imageProcessor.srcDir = settinngs.raw;
+imageProcessor.destDir = settinngs.dest;
+
+
+imageProcessor.onDone = ()=>{
+    console.log(' process  success: ' + imageProcessor.successFiles.length + ' errors: '+imageProcessor.errorFiles.length);
+    fs.readdir(settinngs.raw,(err,list)=>{
+        if(err)onError(err);
+        else removeFiles(settinngs.raw,list);
+    });
+    onProcessDone();
+}
+var onProcessDone = function () {
+   console.log(new Date().toLocaleString()+' done');
+    clearTimeout(mytimer);
+    mytimer = setTimeout(()=>startProcess(),settinngs.delay *1000);
+}
+
+
+copyer.onDone = ()=>{
+    var ar:string[] = copyer.successFiles;
+    console.log(' copy  success: ' + copyer.successFiles.length + ' errors: '+copyer.errorFiles.length);
+    imageProcessor.process(ar);
+}
+
+
+
+
+
+var mytimer;
+
+var onError = function(err){
+    console.error(err);
+}
+
+var removeFiles = function (dir:string,files:string[]){
+    files.forEach(function (file){
+        file = dir+'/'+file;
+        //console.log('removing '+file);
+        fs.remove(file,(err)=>{
+            if(err)this.onError(err);
+        });
+    });
+}
+
+
+var compareLists = function( listDest:string[],listSource:string[]){
+    var extra_files:string[] = _.difference(listDest,listSource);
+    var new_files:string[] =  _.difference(listSource,listDest);
+
+    if(extra_files.length){
+        console.log('removing extra '+extra_files.toString());
+        removeFiles(settinngs.dest,extra_files);
+    }
+    if(new_files.length){
+        console.log(' got new files '+ new_files.length);
+        copyer.copy(new_files);
+    }
+    else onProcessDone();
+}
+
+
+
+var startProcess = function(){
+    console.log(new Date().toDateString()+' startProcess');
+    fs.readdir(settinngs.dest,(err,list1)=>{
+        if(err)onError(err);
+        else{
+            fs.readdir(settinngs.source,(err,list2)=>{
+                if(err)onError(err);
+                else compareLists(list1,list2);
+            });
+        }
+
+    })
+
+}
+
+
+startProcess();

@@ -107,6 +107,7 @@ var ImageProcessor = (function () {
             _this.onSuccessProcess(file);
             _this.doNext();
         }).catch(function (err) {
+            console.error(err);
             _this.onErrorProcess(err, file);
         });
     };
