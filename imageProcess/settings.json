@@ -1,0 +1,7 @@
+{
+    "source":"C:\/\/source",
+    "raw":"c:\/\/wamp\/www\/GitHub\/image-gallery\/data\/raw_pics",
+    "dest":"c:\/\/wamp\/www\/GitHub\/image-gallery\/data\/new_pics",
+    "delay":20
+
+}
