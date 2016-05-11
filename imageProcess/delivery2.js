@@ -46,7 +46,7 @@ var FileCopyer = (function () {
     FileCopyer.prototype.doNext = function () {
         if (this.files.length) {
             var next = this.files.pop();
-            var ext = path.extname(next);
+            var ext = path.extname(next).toLowerCase();
             if (ext === '.jpg' || ext === '.png')
                 this.copyFile(this.srcDir, this.destDir, next);
             else {

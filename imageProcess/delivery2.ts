@@ -64,7 +64,7 @@ class FileCopyer{
     private doNext():void{
         if(this.files.length){
             var next = this.files.pop();
-            var ext = path.extname(next);
+            var ext = path.extname(next).toLowerCase();
             if(ext === '.jpg' || ext ==='.png' )  this.copyFile(this.srcDir,this.destDir,next);
             else{
                 this.onErrorCopy(' wrong file type '+next,next);
