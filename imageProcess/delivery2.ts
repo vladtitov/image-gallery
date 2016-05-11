@@ -19,24 +19,25 @@ var Jimp = require("jimp");
 var logger = fs.createWriteStream(__dirname  + '/logger.log', { flags: 'a' })
     , err_log = fs.createWriteStream(__dirname  + '/error.log', { flags: 'a' });
 
-/*console.log = function(d) { //
+var Log = function(d) {
+    console.log(d);
     logger.write(util.format(d) + '\n');
 };
-console.error = function(d) { //
+var Err = function (d) {
     err_log.write(util.format(d) + '\n');
-};*/
+    console.log(d);
+}
 
-console.error = function(d) { //
-   console.log(d);
-};
+
+
 
 
 class FileCopyer{
     onDone(){
-        console.log('ImageProcessor  done');
+        Log('ImageProcessor  done');
     }
     onError(err){
-        console.error(err)
+        Err(err);
     }
     destDir:string;
     srcDir:string;
@@ -82,10 +83,10 @@ class FileCopyer{
 
 class ImageProcessor{
     onDone(){
-        console.log('ImageProcessor  done');
+        Log('ImageProcessor  done');
     }
     onError(err){
-        console.error(err)
+        Err(err);
     }
     destDir:string;
     srcDir:string;
@@ -109,13 +110,13 @@ class ImageProcessor{
         this.successFiles.push(file);
     }
     private doNext():void{
-        console.log('processing left '+this.files.length );
+        Log('processing left '+this.files.length );
         if(this.files.length){
             var next:string = this.files.pop();
             var ext = path.extname(next);
             if(ext === '.jpg' || ext ==='.png' )this.processFile(this.srcDir,this.destDir,next);
             else this.onErrorProcess(' wrong file type ', next);
-            console.log('   next '+next);
+            Log('   next '+next);
 
 
         }else this.onDone();
@@ -137,7 +138,7 @@ class ImageProcessor{
             this.onSuccessProcess(file);
             this.doNext();
         }).catch((err)=> {
-            console.error(err);
+            this.onError(err);
             this.onErrorProcess(err,file);
         });
     }
@@ -161,15 +162,15 @@ imageProcessor.destDir = settinngs.dest;
 
 
 imageProcessor.onDone = ()=>{
-    console.log(' process  success: ' + imageProcessor.successFiles.length + ' errors: '+imageProcessor.errorFiles.length);
+    Log(' process  success: ' + imageProcessor.successFiles.length + ' errors: '+imageProcessor.errorFiles.length);
     fs.readdir(settinngs.raw,(err,list)=>{
-        if(err)onError(err);
+        if(err)Err(err);
         else removeFiles(settinngs.raw,list);
     });
     onProcessDone();
 }
 var onProcessDone = function () {
-   console.log(new Date().toLocaleString()+' done');
+   Log(new Date().toLocaleString()+' done');
     clearTimeout(mytimer);
     mytimer = setTimeout(()=>startProcess(),settinngs.delay *1000);
 }
@@ -177,7 +178,7 @@ var onProcessDone = function () {
 
 copyer.onDone = ()=>{
     var ar:string[] = copyer.successFiles;
-    console.log(' copy  success: ' + copyer.successFiles.length + ' errors: '+copyer.errorFiles.length);
+    Log(' copy  success: ' + copyer.successFiles.length + ' errors: '+copyer.errorFiles.length);
     imageProcessor.process(ar);
 }
 
@@ -187,14 +188,12 @@ copyer.onDone = ()=>{
 
 var mytimer;
 
-var onError = function(err){
-    console.error(err);
-}
+
 
 var removeFiles = function (dir:string,files:string[]){
     files.forEach(function (file){
         file = dir+'/'+file;
-        //console.log('removing '+file);
+        //Log'removing '+file);
         fs.remove(file,(err)=>{
             if(err)this.onError(err);
         });
@@ -207,11 +206,11 @@ var compareLists = function( listDest:string[],listSource:string[]){
     var new_files:string[] =  _.difference(listSource,listDest);
 
     if(extra_files.length){
-        console.log('removing extra '+extra_files.toString());
+        Log('removing extra '+extra_files.toString());
         removeFiles(settinngs.dest,extra_files);
     }
     if(new_files.length){
-        console.log(' got new files '+ new_files.length);
+       Log(' got new files '+ new_files.length);
         copyer.copy(new_files);
     }
     else onProcessDone();
@@ -220,12 +219,12 @@ var compareLists = function( listDest:string[],listSource:string[]){
 
 
 var startProcess = function(){
-    console.log(new Date().toDateString()+' startProcess');
+    Log(new Date().toDateString()+' startProcess');
     fs.readdir(settinngs.dest,(err,list1)=>{
-        if(err)onError(err);
+        if(err)Err(err);
         else{
             fs.readdir(settinngs.source,(err,list2)=>{
-                if(err)onError(err);
+                if(err)Err(err);
                 else compareLists(list1,list2);
             });
         }
