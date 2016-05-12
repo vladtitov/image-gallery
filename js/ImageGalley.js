@@ -82,15 +82,15 @@ var simple;
                 //  img.remove();
                 //  this.start();
                 // });
-                _this.showAdda();
+                _this.showAda();
                 setTimeout(function () {
                     img.remove();
                 }, 2000);
             }, 8000);
         };
-        Gallery.prototype.showAdda = function () {
+        Gallery.prototype.showAda = function () {
             var _this = this;
-            console.log('showing add');
+            console.log('showing ad');
             var adds = this.$adds.show().addClass('inr').appendTo(this.$overlay);
             setTimeout(function () {
                 adds.removeClass('inr');
