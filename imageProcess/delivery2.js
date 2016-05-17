@@ -49,14 +49,14 @@ var FileCopyer = (function () {
             var next = this.files.pop();
             var ext = path.extname(next).toLowerCase();
             if (ext === '.jpg' || ext === '.png') {
-                console.log(this.srcDir + '/' + next);
+                //  console.log(this.srcDir + '/' + next);
                 this.sizeOf(this.srcDir + '/' + next, function (err, dim) {
                     // console.log(err);
                     if ((dim.width + dim.height) < 8000) {
                         _this.copyFile(_this.srcDir, _this.destDir, next);
                     }
                     else {
-                        _this.onErrorCopy(' wrong file size  ' + next + 'width+heihgt ' + (dim.width + dim.height) + ' where max 8000 ', next);
+                        _this.onErrorCopy(' too big size  ' + next + 'width+heihgt ' + (dim.width + dim.height) + ' where max 8000 ', next);
                         _this.doNext();
                     }
                     // this.copyFile(this.srcDir,this.destDir,next);

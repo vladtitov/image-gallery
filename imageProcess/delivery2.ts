@@ -67,7 +67,7 @@ class FileCopyer{
             var next = this.files.pop();
             var ext = path.extname(next).toLowerCase();
             if(ext === '.jpg' || ext ==='.png' ){
-                console.log(this.srcDir + '/' + next);
+              //  console.log(this.srcDir + '/' + next);
                 this.sizeOf(this.srcDir+'/'+next,(err,dim:any)=>{
 
                    // console.log(err);
@@ -75,7 +75,7 @@ class FileCopyer{
                    if((dim.width+dim.height)<8000){
                        this.copyFile(this.srcDir,this.destDir,next);
                    }else{
-                       this.onErrorCopy(' wrong file size  '+next+'width+heihgt ' + (dim.width+dim.height)+ ' where max 8000 ',next);
+                       this.onErrorCopy(' too big size  '+next+'width+heihgt ' + (dim.width+dim.height)+ ' where max 8000 ',next);
                        this.doNext();
                    }
 
