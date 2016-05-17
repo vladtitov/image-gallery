@@ -14,12 +14,15 @@ var path = require('path');
 var util = require('util');
 var Jimp = require("jimp");
 var logger = fs.createWriteStream(__dirname + '/logger.log', { flags: 'a' }), err_log = fs.createWriteStream(__dirname + '/error.log', { flags: 'a' });
-console.log = function (d) {
+/*
+console.log  = function(d) {
     logger.write(util.format(d) + '\n');
 };
+
 console.error = function (d) {
     err_log.write(util.format(d) + '\n');
-};
+
+}*/
 var FileCopyer = (function () {
     function FileCopyer(fs) {
         this.fs = fs;
@@ -92,9 +95,9 @@ var ImageProcessor = (function () {
         this.successFiles.push(file);
     };
     ImageProcessor.prototype.doNext = function () {
-        console.log('processing left ' + this.files.length);
         if (this.files.length) {
             var next = this.files.pop();
+            console.log('processing: ' + next + ' left ' + this.files.length);
             this.processFile(this.srcDir, this.destDir, next);
         }
         else
@@ -109,7 +112,8 @@ var ImageProcessor = (function () {
         src = src + '/' + file;
         dest = dest + '/' + file;
         this.jimp.read(src).then(function (lenna) {
-            lenna.resize(1920, 1080)
+            lenna
+                .resize(1920, 1280)
                 .quality(80)
                 .write(dest);
             _this.onSuccessProcess(file);
@@ -140,7 +144,7 @@ imageProcessor.onDone = function () {
     onProcessDone();
 };
 var onProcessDone = function () {
-    console.log(new Date().toLocaleString() + ' done');
+    console.log(new Date().toLocaleString() + ' done next in' + settinngs.delay);
     clearTimeout(mytimer);
     mytimer = setTimeout(function () { return startProcess(); }, settinngs.delay * 1000);
 };

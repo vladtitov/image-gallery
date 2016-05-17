@@ -69,7 +69,7 @@ var simple;
             var _this = this;
             console.log('full screen');
             var next = this.getNext();
-            var div = $('<div>').append($('<img>').attr('src', next.filename));
+            var div = $('<div>').addClass('fullimg').css('background-image', 'url("' + next.filename + '")');
             var img = $('<div>').append(div).addClass('fullscreen in');
             img.appendTo(this.$overlay);
             setTimeout(function () {
@@ -164,7 +164,8 @@ var simple;
                 return;
             }
             var next = this.getNext();
-            var newImage = $('<img>').attr('src', next.filename);
+            var newImage = $('<div>').addClass('img').css('background-image', 'url("' + next.filename + '")');
+            //   var newImage:JQuery = $('<img>').attr('src',next.filename);
             //  console.log(this.inset);
             var div = this.screenImages[this.inset];
             var oldImage = div.children();
