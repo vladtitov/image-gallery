@@ -55,8 +55,10 @@ var FileCopyer = (function () {
                     if (dim.width + dim.height < 6000) {
                         _this.copyFile(_this.srcDir, _this.destDir, next);
                     }
-                    else
-                        _this.onErrorCopy(' wrong file size  ' + next + 'width+heihgt ' + dim.width + dim.height + ' where max 6000 ', next);
+                    else {
+                        _this.onErrorCopy(' wrong file size  ' + next + 'width+heihgt ' + (dim.width + dim.height) + ' where max 6000 ', next);
+                        _this.doNext();
+                    }
                     // this.copyFile(this.srcDir,this.destDir,next);
                 });
             }
