@@ -26,6 +26,7 @@ console.error = function (d) {
 var FileCopyer = (function () {
     function FileCopyer(fs) {
         this.fs = fs;
+        this.sizeOf = require('image-size');
     }
     FileCopyer.prototype.onDone = function () {
         console.log('ImageProcessor  done');
@@ -43,11 +44,22 @@ var FileCopyer = (function () {
         this.successFiles.push(file);
     };
     FileCopyer.prototype.doNext = function () {
+        var _this = this;
         if (this.files.length) {
             var next = this.files.pop();
             var ext = path.extname(next).toLowerCase();
-            if (ext === '.jpg' || ext === '.png')
-                this.copyFile(this.srcDir, this.destDir, next);
+            if (ext === '.jpg' || ext === '.png') {
+                console.log(this.srcDir + '/' + next);
+                this.sizeOf(this.srcDir + '/' + next, function (err, dim) {
+                    // console.log(err);
+                    if (dim.width + dim.height < 6000) {
+                        _this.copyFile(_this.srcDir, _this.destDir, next);
+                    }
+                    else
+                        _this.onErrorCopy(' wrong file size  ' + next + 'width+heihgt ' + dim.width + dim.height + ' where max 6000 ', next);
+                    // this.copyFile(this.srcDir,this.destDir,next);
+                });
+            }
             else {
                 this.onErrorCopy(' wrong file type ' + next, next);
                 this.doNext();

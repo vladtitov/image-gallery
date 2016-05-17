@@ -45,6 +45,8 @@ class FileCopyer{
     private files:string[];
     errorFiles:string[];
     successFiles:string[];
+
+    private sizeOf = require('image-size');
     constructor(private fs:any){
 
     }
@@ -59,11 +61,26 @@ class FileCopyer{
     private onFileCopied(file:string){
         this.successFiles.push(file);
     }
+
     private doNext():void{
         if(this.files.length){
             var next = this.files.pop();
             var ext = path.extname(next).toLowerCase();
-            if(ext === '.jpg' || ext ==='.png' )  this.copyFile(this.srcDir,this.destDir,next);
+            if(ext === '.jpg' || ext ==='.png' ){
+                console.log(this.srcDir + '/' + next);
+                this.sizeOf(this.srcDir+'/'+next,(err,dim:any)=>{
+
+                   // console.log(err);
+
+                   if(dim.width+dim.height<6000){
+                       this.copyFile(this.srcDir,this.destDir,next);
+                   }else this.onErrorCopy(' wrong file size  '+next+'width+heihgt ' + dim.width+dim.height+ ' where max 6000 ',next);
+
+                   // this.copyFile(this.srcDir,this.destDir,next);
+                })
+
+
+            }
             else{
                 this.onErrorCopy(' wrong file type '+next,next);
                 this.doNext();
@@ -99,6 +116,7 @@ class ImageProcessor{
     errorFiles:string[];
     successFiles:string[];
     private path = path;
+
 
     private files:string[];
      constructor(private jimp){
