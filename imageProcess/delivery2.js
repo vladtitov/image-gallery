@@ -14,15 +14,12 @@ var path = require('path');
 var util = require('util');
 var Jimp = require("jimp");
 var logger = fs.createWriteStream(__dirname + '/logger.log', { flags: 'a' }), err_log = fs.createWriteStream(__dirname + '/error.log', { flags: 'a' });
-/*
-console.log  = function(d) {
+console.log = function (d) {
     logger.write(util.format(d) + '\n');
 };
-
 console.error = function (d) {
     err_log.write(util.format(d) + '\n');
-
-}*/
+};
 var FileCopyer = (function () {
     function FileCopyer(fs) {
         this.fs = fs;
@@ -56,7 +53,7 @@ var FileCopyer = (function () {
                         _this.copyFile(_this.srcDir, _this.destDir, next);
                     }
                     else {
-                        _this.onErrorCopy(' too big size  ' + next + 'width+heihgt ' + (dim.width + dim.height) + ' where max 8000 ', next);
+                        _this.onErrorCopy(' too big ' + next + ' width+heihgt ' + (dim.width + dim.height) + ' where max 8000 ', next);
                         _this.doNext();
                     }
                     // this.copyFile(this.srcDir,this.destDir,next);

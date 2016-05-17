@@ -19,7 +19,7 @@ var Jimp = require("jimp");
 var logger = fs.createWriteStream(__dirname  + '/logger.log', { flags: 'a' })
     , err_log = fs.createWriteStream(__dirname  + '/error.log', { flags: 'a' });
 
-/*
+
 console.log  = function(d) {
     logger.write(util.format(d) + '\n');
 };
@@ -27,7 +27,7 @@ console.log  = function(d) {
 console.error = function (d) {
     err_log.write(util.format(d) + '\n');
 
-}*/
+}
 
 
 
@@ -75,7 +75,7 @@ class FileCopyer{
                    if((dim.width+dim.height)<8000){
                        this.copyFile(this.srcDir,this.destDir,next);
                    }else{
-                       this.onErrorCopy(' too big size  '+next+'width+heihgt ' + (dim.width+dim.height)+ ' where max 8000 ',next);
+                       this.onErrorCopy(' too big '+next+' width+heihgt ' + (dim.width+dim.height)+ ' where max 8000 ',next);
                        this.doNext();
                    }
 
