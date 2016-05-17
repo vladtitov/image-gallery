@@ -72,9 +72,12 @@ class FileCopyer{
 
                    // console.log(err);
 
-                   if(dim.width+dim.height<6000){
+                   if((dim.width+dim.height)<8000){
                        this.copyFile(this.srcDir,this.destDir,next);
-                   }else this.onErrorCopy(' wrong file size  '+next+'width+heihgt ' + dim.width+dim.height+ ' where max 6000 ',next);
+                   }else{
+                       this.onErrorCopy(' wrong file size  '+next+'width+heihgt ' + (dim.width+dim.height)+ ' where max 8000 ',next);
+                       this.doNext();
+                   }
 
                    // this.copyFile(this.srcDir,this.destDir,next);
                 })
